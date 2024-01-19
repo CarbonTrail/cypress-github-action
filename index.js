@@ -346,14 +346,26 @@ const getSpecsList = () => {
 }
 
 const buildAppMaybe = () => {
-  const buildApp = core.getInput('build')
-  if (!buildApp) {
+  const buildCommand = core.getInput('build')
+  
+  if (!buildCommand) {
     return
   }
 
-  debug(`building application using "${buildApp}"`)
+  // allow commands to be separated using commas or newlines
+  const seperateBuildCommands = buildCommand
+    .split(/,|\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  debug(
+    `Separated ${
+      seperateBuildCommands.length
+    } build commands ${seperateBuildCommands.join(', ')}`
+  )
 
-  return execCommand(buildApp, true, 'build app')
+  return seperateBuildCommands.map((buildCommand) => {
+    return execCommand(buildApp, true, 'build app')
+  })
 }
 
 const startServersMaybe = () => {
